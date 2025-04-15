@@ -1,0 +1,34 @@
+#!/bin/bash
+# Get the short hash of the most recent commit
+COMMIT_HASH=$(git rev-parse --short HEAD)
+PROJECT_DIR="${ROOT_DIR:-$(pwd)}"
+
+# Echo the commit hash
+echo "----------------------------------------"
+echo "✓ Commit successful!"
+echo "✓ Commit hash: $COMMIT_HASH"
+echo "----------------------------------------"
+
+# Check if PROJECT_DIR is set
+if [ -z "$PROJECT_DIR" ]; then
+    echo "Error: PROJECT_DIR is not set."
+    exit 1
+fi
+
+# Check if the merge_migrations.sh script exists
+MERGE_SCRIPT="$PROJECT_DIR/migration.merge.sh"
+if [ -f "$MERGE_SCRIPT" ]; then
+    echo "Merging pending migrations..."
+    # Run the merge script and automatically answer 'yes' to delete pending files
+    echo "o" | "$MERGE_SCRIPT"
+    if [ $? -eq 0 ]; then
+        echo "✓ Migrations merged successfully!"
+    else
+        echo "✗ Failed to merge migrations."
+    fi
+else
+    echo "Warning: merge_migrations.sh not found at $MERGE_SCRIPT"
+fi
+
+# Exit successfully
+exit 0
